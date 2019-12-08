@@ -30,11 +30,7 @@ while not sta_if.isconnected():
 # webrepl.start()
 led(1)
 
-addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
 
-soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-soc.bind(addr)
-soc.listen(1)
 
 
 i2c = I2C(scl=Pin(5), sda=Pin(4))
@@ -57,26 +53,32 @@ def get_measurements():
     return json.dumps(out)
 
 
+# raise Exception
+addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+
+soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+soc.bind(addr)
+soc.listen(1)
+
+
 while True:
     cl, addr = soc.accept()
     print('client connected from', addr)
     cl_file = cl.makefile('rwb', 0)
     led(0)
 
-    data = cl_file.read(1)
-    print(data)
-    if data == b"\x01":
-        print("get_measurements")
-        res = get_measurements()
-    else:
-        res = ""
-        print(data)
-        cl.close()
-        led(1)
-        continue
-    
+    # data = cl_file.read(1)
+    # print(data)
+
+    while True:
+        line = cl_file.readline()
+        if not line or line == b'\r\n':
+            break
+
+    res = get_measurements()
     print("RES: %s" % (str(res)))
     
+    cl.send(b"HTTP/1.0 200 OK\r\nAccess-Control-Allow-Origin: *\r\n\r\n")
     cl.send(res)
     led(1)
 
