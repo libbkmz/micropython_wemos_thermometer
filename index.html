@@ -18,30 +18,101 @@
 </head>
 
 <body>
-
+	<input name="update_interval", value="2">
 	<div id="myDiv"></div>
 	<br>
 	<br>
 
 	<script type="text/javascript">
-		// obj1 = {"sht": {"hum": 55.7488, "temp": 23.4539}, "dht": {"hum": 63.5, "temp": 23.2}}
-
-		let charts_data = [];
-
-		let sht_temp = {};
-		let sht_temp = {};
-		let sht_temp = {};
-		let sht_temp = {};
-
-
-		let trace1 = {
-		  y: [10, 15, 13, 17],
-		  type: 'scatter'
+		let charts_data = {
+			dht_hum: {
+				x: [],
+				y: [],
+				name: "DHT hum",
+				type: "scatter",
+			},
+			sht_hum: {
+				x: [],
+				y: [],
+				name: "SHT hum",
+				type: "scatter",
+			},
+			dht_temp: {
+				x: [],
+				y: [],
+				yaxis: 'y2',
+				name: "DHT temp",
+				type: "scatter",
+			},
+			sht_temp: {
+				x: [],
+				y: [],
+				yaxis: 'y2',
+				name: "SHT temp",
+				type: "scatter",
+			},
 		};
 
-var data = [trace1];
 
-Plotly.newPlot('myDiv', data);
+		
+
+		let data = [
+			charts_data["dht_hum"],
+			charts_data["sht_hum"],
+			charts_data["dht_temp"],
+			charts_data["sht_temp"],
+		];
+
+		let layout = {
+			 autosize: true,
+			 height: $(window).height(),
+			 width: $(window).width(),
+			 margin: {
+				l: 50,
+				r: 200,
+				b: 100,
+				t: 50,
+				pad: 4
+			},
+			  yaxis: {
+			    mirror: true, 
+			    // range: [0, 100], 
+			    title: 'Humidity', 
+			  }, 
+			  yaxis2: {
+			    overlaying: 'y1', 
+			    // range: [0, 35], 
+			    side: 'right', 
+			    title: 'Temperature', 
+			  }
+
+		};
+
+		let callable_fn = function (){
+			$.getJSON("http://192.168.100.251", function (data){
+				let _now = new Date();
+				for (let k in data){
+					charts_data[k]["y"].push(data[k]);
+					charts_data[k]["x"].push(_now);
+				}
+			});
+			
+
+			Plotly.redraw('myDiv');
+			let interval = 
+			setTimeout(callable_fn, parseInt($("input[name='update_interval']")[0].value) * 1000);
+		}
+
+		$(function (){
+			callable_fn();	
+		});
+		
+
+
+
+
+
+Plotly.newPlot('myDiv', data, layout, {responsive: true});
 
 setInterval(function (){
 
@@ -50,3 +121,4 @@ setInterval(function (){
 </body>
 
 </html>
+

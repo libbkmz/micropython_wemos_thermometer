@@ -41,14 +41,10 @@ def get_measurements():
     dht_sens.measure()
     sht_temp, sht_hum = sht_sens.measure()
     out = {
-        "sht": {
-            "temp": sht_temp,
-            "hum": sht_hum,
-        },
-        "dht": {
-            "temp": dht_sens.temperature(),
-            "hum": dht_sens.humidity(),
-        }
+            "sht_temp": sht_temp,
+            "sht_hum": sht_hum,
+            "dht_temp": dht_sens.temperature(),
+            "dht_hum": dht_sens.humidity(),
     }
     return json.dumps(out)
 
@@ -75,11 +71,15 @@ while True:
         if not line or line == b'\r\n':
             break
 
-    res = get_measurements()
-    print("RES: %s" % (str(res)))
-    
-    cl.send(b"HTTP/1.0 200 OK\r\nAccess-Control-Allow-Origin: *\r\n\r\n")
-    cl.send(res)
+    try:
+        res = get_measurements()
+        print("RES: %s" % (str(res)))
+        
+        cl.send(b"HTTP/1.0 200 OK\r\nAccess-Control-Allow-Origin: *\r\n\r\n")
+        cl.send(res)
+    except:
+        cl.send(b"HTTP/1.0 500 OK\r\nAccess-Control-Allow-Origin: *\r\n\r\n")
+
     led(1)
 
     cl.close()
