@@ -1,16 +1,11 @@
-from temp_measures import get_measurements
-
 print("Executed main.py")
 
-import socket
 import time
 import gc
 
 import network
 from machine import Pin, I2C
-import machine
 
-import sdcard
 from ntptime import settime
 from wifi_config import AP_NAME, AP_PASSWD
 
@@ -31,3 +26,5 @@ led(1)
 settime()
 gc.collect()
 
+from datastore import http_server_loop
+http_server_loop()
