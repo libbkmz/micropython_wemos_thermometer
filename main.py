@@ -26,5 +26,7 @@ led(1)
 settime()
 gc.collect()
 
-from datastore import http_server_loop
-http_server_loop(led)
+from temp_measures import *
+
+# from datastore import http_server_loop
+# http_server_loop(led)
