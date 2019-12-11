@@ -16,6 +16,7 @@ dht_sens = dht12.DHT12(i2c)
 sht_sens = sht30.SHT30(i2c)
 
 sd = sdcard.SDCard(SPI(1), Pin(15))
+assert sd.csd_version == 2
 buffer_4096 = bytearray(512)
 pointer = 0
 buffer_cursor = 0  # in lba size units
@@ -24,9 +25,6 @@ SD_LBA_SIZE = const(512)
 last_measurements = None
 last_measurements_time = 0
 measurements_store_time_limit_sec = 2.5
-
-
-
 
 
 def _get_measures():
