@@ -4,7 +4,7 @@ import time
 import gc
 
 import network
-from machine import Pin, I2C
+from machine import Pin
 
 from ntptime import settime
 from wifi_config import AP_NAME, AP_PASSWD
@@ -27,4 +27,4 @@ settime()
 gc.collect()
 
 from datastore import http_server_loop
-http_server_loop()
+http_server_loop(led)
